@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <meta name="description" content="Personalized fitness, home workout and Togolese nutrition recommendations.">
+  <title>FitTogo — Personal Fitness Assessment</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="FitTogo home"><span class="brand-mark">F</span> FitTogo</a>
+    <span class="header-note">Fitness that fits your life</span>
+  </header>
+  <main class="container">
+    <section class="hero">
+      <p class="eyebrow">YOUR PERSONAL FITNESS BLUEPRINT</p>
+      <h1>Build a stronger you.<br><span>Eat local. Train smart.</span></h1>
+      <p class="hero-copy">Answer a few questions to receive a practical workout and nutrition plan built around your goals, schedule, budget and familiar West African foods.</p>
+      <div class="hero-tags"><span>✓ Home or gym</span><span>✓ Togolese meals</span><span>✓ Personalized guidance</span></div>
+    </section>
+
+    <section class="panel" id="assessment-panel">
+      <div class="section-heading">
+        <div><p class="eyebrow">FITNESS ASSESSMENT</p><h2>Tell us about yourself</h2></div>
+        <span class="step-count">01 / 02</span>
+      </div>
+      <form id="assessment-form">
+        <fieldset>
+          <legend>1. Personal details</legend>
+          <div class="form-grid four">
+            <label>Age <input name="age" type="number" min="16" max="100" value="35" required></label>
+            <label>Sex for calorie estimate
+              <select name="sex"><option value="male">Male</option><option value="female">Female</option><option value="unspecified">Prefer not to say</option></select>
+            </label>
+            <label>Weight (kg) <input name="weight" type="number" min="30" max="300" step=".1" value="73" required></label>
+            <label>Height (cm) <input name="height" type="number" min="120" max="230" value="170" required></label>
+          </div>
+          <div class="form-grid two">
+            <label>Country
+              <select name="country"><option>Togo</option><option>Ghana</option><option>Benin</option><option>Other</option></select>
+            </label>
+            <label>Daily activity outside exercise
+              <select name="activity"><option value="sedentary">Mostly sitting / office work</option><option value="light">Lightly active</option><option value="moderate">Moderately active</option><option value="high">Very active / physical work</option></select>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>2. Your goal and experience</legend>
+          <div class="form-grid two">
+            <label>Primary goal
+              <select name="goal">
+                <option value="recomp">Build muscle and lose belly fat</option>
+                <option value="muscle">Build muscle and gain weight</option>
+                <option value="fatloss">Lose weight and reduce body fat</option>
+                <option value="fitness">Improve strength and endurance</option>
+                <option value="maintain">Maintain fitness and general health</option>
+              </select>
+            </label>
+            <label>Training experience
+              <select name="level"><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>3. Training setup</legend>
+          <div class="form-grid two">
+            <label>Where will you train?
+              <select name="place"><option value="home">At home</option><option value="gym">At a gym</option><option value="both">Both</option></select>
+            </label>
+            <label>Days available per week
+              <select name="days"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select>
+            </label>
+            <label>Available equipment
+              <select name="equipment"><option value="bodyweight">Bodyweight only</option><option value="bands">Resistance bands</option><option value="dumbbells">Dumbbells</option><option value="homekit">Dumbbells and bands</option><option value="gym">Full gym equipment</option></select>
+            </label>
+            <label>Typical workout duration
+              <select name="duration"><option value="30">About 30 minutes</option><option value="45" selected>About 45 minutes</option><option value="60">About 60 minutes</option></select>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>4. Food preferences and budget</legend>
+          <div class="form-grid two">
+            <label>Dietary preference
+              <select name="diet">
+                <option value="none">No restrictions — I eat everything</option>
+                <option value="pesc">No meat; fish, eggs and dairy are okay</option>
+                <option value="veg">Vegetarian — eggs and dairy are okay</option>
+                <option value="vegan">Vegan</option>
+                <option value="nofish">No fish</option>
+              </select>
+            </label>
+            <label>Food budget
+              <select name="budget"><option value="low">Economical</option><option value="moderate" selected>Moderate</option><option value="flexible">Flexible</option></select>
+            </label>
+            <label>Meals per day
+              <select name="meals"><option value="2">2 meals</option><option value="3" selected>3 meals</option><option value="4">3 meals + 1 snack</option><option value="5">3 meals + 2 snacks</option></select>
+            </label>
+            <label>Foods you want included (optional)
+              <input name="favourites" type="text" placeholder="e.g. ayimolou, ablo, yam">
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>5. Health and limitations</legend>
+          <label>Injuries, medical restrictions or exercises you need to avoid
+            <textarea name="limitations" rows="3" placeholder="Write 'None' if not applicable. Please mention relevant medical restrictions."></textarea>
+          </label>
+          <p class="helper">This tool provides general wellness guidance, not medical diagnosis or treatment. If you have a medical condition, are pregnant, or have persistent pain, consult a qualified health professional before starting.</p>
+        </fieldset>
+        <button class="primary-button" type="submit">Generate my personalized plan <span>→</span></button>
+      </form>
+    </section>
+
+    <section id="results" class="results hidden" aria-live="polite">
+      <div class="results-top">
+        <div><p class="eyebrow">YOUR PERSONAL BLUEPRINT</p><h2>Your plan is ready</h2><p class="muted" id="summary-line"></p></div>
+        <button class="secondary-button" id="edit-button" type="button">Edit answers</button>
+      </div>
+      <div class="metric-grid" id="metrics"></div>
+      <div class="notice" id="safety-note"></div>
+      <section class="result-card"><div class="card-heading"><div><p class="eyebrow">NUTRITION</p><h3>Your daily nutrition targets</h3></div></div><div id="nutrition"></div></section>
+      <section class="result-card"><p class="eyebrow">7-DAY MEAL GUIDE</p><h3>Togolese-inspired meals</h3><p class="muted">Portions are starting estimates. Adjust to hunger, progress and professional advice.</p><div id="meal-plan" class="meal-list"></div></section>
+      <section class="result-card"><p class="eyebrow">MOVEMENT</p><h3>Your weekly workout schedule</h3><div id="workouts"></div></section>
+      <section class="result-card"><p class="eyebrow">SHOPPING</p><h3>Your shopping checklist</h3><div id="shopping" class="shopping-grid"></div></section>
+      <section class="result-card"><p class="eyebrow">PROGRESS</p><h3>How to track your results</h3><ul class="tips"><li>Weigh yourself 3 mornings per week and compare weekly averages.</li><li>Measure your waist once a week under the same conditions.</li><li>Take front, side and back photos every 4 weeks.</li><li>Record exercise sets, repetitions and resistance so you can gradually progress.</li></ul></section>
+      <div class="results-actions"><button class="primary-button" id="print-button" type="button">Print / Save as PDF</button><button class="secondary-button" id="restart-button" type="button">Start a new assessment</button></div>
+      <p class="privacy-note">Your answers are processed in this browser. This starter version does not send or store personal data on a server.</p>
+    </section>
+  </main>
+  <footer><span>FitTogo</span><span>Eat local. Train consistently. Progress patiently.</span></footer>
+  <script src="app.js"></script>
+</body>
+</html>
