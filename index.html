@@ -4,21 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#111827">
-  <meta name="description" content="Personalized fitness, home workout and Togolese nutrition recommendations.">
+  <meta name="description" content="Personalized fitness, home workout and African nutrition recommendations.">
   <title>FitTogo — Personal Fitness Assessment</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="#" aria-label="FitTogo home"><span class="brand-mark">F</span> FitTogo</a>
-    <span class="header-note">Fitness that fits your life</span>
+    <div class="header-tools"><span class="header-note">Fitness that fits your life</span><label class="language-control" for="language-select"><span class="language-label">Language</span><select id="language-select" aria-label="Choose language"><option value="en" selected>English</option><option value="fr">Français</option></select></label></div>
   </header>
   <main class="container">
     <section class="hero">
       <p class="eyebrow">YOUR PERSONAL FITNESS BLUEPRINT</p>
       <h1>Build a stronger you.<br><span>Eat local. Train smart.</span></h1>
       <p class="hero-copy">Answer a few questions to receive a practical workout and nutrition plan built around your goals, schedule, budget and familiar West African foods.</p>
-      <div class="hero-tags"><span>✓ Home or gym</span><span>✓ Togolese meals</span><span>✓ Personalized guidance</span></div>
+      <div class="hero-tags"><span>✓ Home or gym</span><span>✓ African meals</span><span>✓ Personalized guidance</span></div>
     </section>
 
     <section class="panel" id="assessment-panel">
@@ -126,7 +126,7 @@
       <div class="metric-grid" id="metrics"></div>
       <div class="notice" id="safety-note"></div>
       <section class="result-card"><div class="card-heading"><div><p class="eyebrow">NUTRITION</p><h3>Your daily nutrition targets</h3></div></div><div id="nutrition"></div></section>
-      <section class="result-card"><p class="eyebrow">7-DAY MEAL GUIDE</p><h3>Togolese-inspired meals</h3><p class="muted">Portions are starting estimates. Adjust to hunger, progress and professional advice.</p><div id="meal-plan" class="meal-list"></div></section>
+      <section class="result-card"><p class="eyebrow">7-DAY MEAL GUIDE</p><h3>African-inspired meals</h3><p class="muted">Portions are starting estimates. Adjust to hunger, progress and professional advice.</p><div id="meal-plan" class="meal-list"></div></section>
       <section class="result-card"><p class="eyebrow">MOVEMENT</p><h3>Your weekly workout schedule</h3><div id="workouts"></div></section>
       <section class="result-card"><p class="eyebrow">SHOPPING</p><h3>Your shopping checklist</h3><div id="shopping" class="shopping-grid"></div></section>
       <section class="result-card"><p class="eyebrow">PROGRESS</p><h3>How to track your results</h3><ul class="tips"><li>Weigh yourself 3 mornings per week and compare weekly averages.</li><li>Measure your waist once a week under the same conditions.</li><li>Take front, side and back photos every 4 weeks.</li><li>Record exercise sets, repetitions and resistance so you can gradually progress.</li></ul></section>
