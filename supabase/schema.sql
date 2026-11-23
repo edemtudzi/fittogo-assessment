@@ -66,8 +66,8 @@ create policy "Admins update FitTogo profiles"
   using ((select public.is_fittogo_admin()))
   with check ((select public.is_fittogo_admin()));
 
-grant select, update on public.profiles to authenticated;
-revoke insert, delete on public.profiles from anon, authenticated;
+revoke all on table public.profiles from anon, authenticated;
+grant select, update on table public.profiles to authenticated;
 
 -- New users cannot approve themselves or change their role.
 -- The first admin must be promoted manually in the SQL Editor after signing up:
