@@ -11,7 +11,7 @@
   const copy = {
     en: {
       title:'FitTogo member access', intro:'Create an account or sign in to access your personal fitness assessment.',
-      login:'Sign in', signup:'Create account', email:'Email address', password:'Password',
+      login:'Sign in', signup:'Create account', email:'Email address', password:'Password', showPassword:'Show', hidePassword:'Hide',
       name:'Full name', submitLogin:'Sign in', submitSignup:'Create account', switchLogin:'Already registered? Sign in',
       switchSignup:'New to FitTogo? Create an account', config:'FitTogo access is not configured yet. The site owner must connect its Supabase project before users can register.',
       confirm:'Check your email and confirm your address. Your account will then wait for administrator approval.',
@@ -29,7 +29,7 @@
     },
     fr: {
       title:'Accès membres FitTogo', intro:'Créez un compte ou connectez-vous pour accéder à votre évaluation fitness personnalisée.',
-      login:'Connexion', signup:'Créer un compte', email:'Adresse e-mail', password:'Mot de passe',
+      login:'Connexion', signup:'Créer un compte', email:'Adresse e-mail', password:'Mot de passe', showPassword:'Afficher', hidePassword:'Masquer',
       name:'Nom complet', submitLogin:'Se connecter', submitSignup:'Créer mon compte', switchLogin:'Déjà inscrit ? Connectez-vous',
       switchSignup:'Nouveau sur FitTogo ? Créez un compte', config:'L’accès FitTogo n’est pas encore configuré. Le propriétaire du site doit connecter son projet Supabase avant toute inscription.',
       confirm:'Consultez votre boîte e-mail et confirmez votre adresse. Votre compte sera ensuite en attente de validation par l’administrateur.',
@@ -78,7 +78,7 @@
       '<div class="auth-tabs"><button type="button" id="mode-login" class="' + (authMode==='login'?'active':'') + '">' + t('login') + '</button><button type="button" id="mode-signup" class="' + (authMode==='signup'?'active':'') + '">' + t('signup') + '</button></div>' +
       '<form id="auth-form">' + nameField +
       '<label>' + t('email') + '<input id="auth-email" type="email" autocomplete="email" required></label>' +
-      '<label>' + t('password') + '<input id="auth-password" type="password" autocomplete="' + (authMode==='signup'?'new-password':'current-password') + '" minlength="8" required><small>' + t('passwordHint') + '</small></label>' +
+      '<label>' + t('password') + '<div class="password-field"><input id="auth-password" type="password" autocomplete="' + (authMode==='signup'?'new-password':'current-password') + '" minlength="8" required><button type="button" class="password-toggle" id="password-toggle" aria-controls="auth-password" aria-pressed="false">' + t('showPassword') + '</button></div><small>' + t('passwordHint') + '</small></label>' +
       '<button class="primary-button auth-submit" type="submit">' + t(authMode==='login'?'submitLogin':'submitSignup') + '</button></form>' +
       '<button type="button" class="auth-switch" id="auth-switch">' + t(authMode==='login'?'switchSignup':'switchLogin') + '</button>' +
       '<p id="auth-message" class="auth-message" hidden></p></section>';
@@ -86,6 +86,13 @@
     $('mode-signup').addEventListener('click',()=>{authMode='signup';renderAuth();});
     $('auth-switch').addEventListener('click',()=>{authMode=authMode==='login'?'signup':'login';renderAuth();});
     $('auth-form').addEventListener('submit',submitAuth);
+    $('password-toggle').addEventListener('click',()=>{
+      const field=$('auth-password');
+      const visible=field.type==='password';
+      field.type=visible?'text':'password';
+      $('password-toggle').textContent=t(visible?'hidePassword':'showPassword');
+      $('password-toggle').setAttribute('aria-pressed',String(visible));
+    });
     if (window.FITTOGO_AUTH_MESSAGE) message(window.FITTOGO_AUTH_MESSAGE);
   }
 
