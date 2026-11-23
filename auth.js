@@ -193,6 +193,7 @@
       renderAuth();message(t('config'),'error');return;
     }
     supabase=window.supabase.createClient(window.FITTOGO_SUPABASE_URL,window.FITTOGO_SUPABASE_ANON_KEY,{
+      db:{schema:'fittogo'},
       auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
     });
     const {data:{session}}=await supabase.auth.getSession();
@@ -207,6 +208,8 @@
     if(!currentProfile || currentProfile.status!=='approved'){renderAuth();}
     if(currentProfile?.role==='admin') loadAdminDashboard();
   });
-  document.addEventListener('DOMContentLoaded',init);
-  if(document.readyState!=='loading') init();
+  let initialized=false;
+  async function initializeOnce(){if(initialized)return;initialized=true;await init();}
+  document.addEventListener('DOMContentLoaded',initializeOnce,{once:true});
+  if(document.readyState!=='loading') initializeOnce();
 })();
