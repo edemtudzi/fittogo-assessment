@@ -122,9 +122,13 @@
     message(t('loading'));
     const {data:{user},error:userError}=await supabase.auth.getUser();
     if(userError || !user){renderAuth();return;}
-    const {data:profile,error}=await supabase.from('profiles').select('id,email,status,role,created_at').eq('id',user.id).single();
+    const {data:profile,error}=await supabase.from('members')
+      .select('user_id,email,full_name,status,created_at')
+      .eq('user_id',user.id).single();
     if(error || !profile){renderAuth();message(t('profileError'),'error');return;}
-    currentProfile=profile;
+    const {data:isAdmin,error:adminError}=await supabase.rpc('is_admin');
+    if(adminError){renderAuth();message(t('profileError'),'error');return;}
+    currentProfile={...profile,role:isAdmin?'admin':'user',id:profile.user_id};
     if(profile.status!=='approved') {
       renderAuth();
       const key=profile.status==='pending'?'pending':profile.status==='rejected'?'rejected':'suspended';
@@ -132,8 +136,9 @@
       return;
     }
     showApp();
-    addSessionBar(user.email,profile.role);
-    if(profile.role==='admin') await loadAdminDashboard();
+    addSessionBar(user.email,currentProfile.role);
+    if(isAdmin) await loadAdminDashboard();
+    else $('admin-dashboard')?.remove();
   }
 
   function addSessionBar(email,role) {
@@ -148,7 +153,7 @@
     let dashboard=$('admin-dashboard');
     if(!dashboard){dashboard=document.createElement('section');dashboard.id='admin-dashboard';dashboard.className='admin-dashboard';$('app-content').prepend(dashboard);}
     dashboard.innerHTML='<h2>' + t('admin') + '</h2><h3>' + t('requests') + '</h3><p>Loading…</p>';
-    const {data,error}=await supabase.from('profiles').select('id,email,status,role,created_at').order('created_at',{ascending:false});
+    const {data,error}=await supabase.rpc('admin_list_members');
     if(error){dashboard.innerHTML='<p class="auth-message" data-kind="error">' + t('err') + '</p>';return;}
     const pending=data.filter(p=>p.status==='pending');
     const others=data.filter(p=>p.status!=='pending');
@@ -161,8 +166,8 @@
   function memberRow(profile) {
     const action=profile.status==='approved'?'suspend':profile.status==='suspended'?'restore':'approve';
     const label=profile.status==='approved'?t('suspend'):profile.status==='suspended'?t('restore'):t('approve');
-    const reject=profile.status==='pending'?'<button type="button" class="admin-action danger" data-action="rejected" data-id="'+profile.id+'">'+t('reject')+'</button>':'';
-    return '<article class="member-row"><div><b>'+escapeHtml(profile.email)+'</b><small>'+escapeHtml(profile.status)+' · '+escapeHtml(profile.role)+'</small></div><div class="member-actions"><button type="button" class="admin-action" data-action="'+(action==='restore'?'approved':action==='suspend'?'suspended':'approved')+'" data-id="'+profile.id+'">'+label+'</button>'+reject+'</div></article>';
+    const reject=profile.status==='pending'?'<button type="button" class="admin-action danger" data-action="rejected" data-id="'+profile.user_id+'">'+t('reject')+'</button>':'';
+    return '<article class="member-row"><div><b>'+escapeHtml(profile.email)+'</b><small>'+escapeHtml(profile.status)+' · '+escapeHtml(profile.role)+'</small></div><div class="member-actions"><button type="button" class="admin-action" data-action="'+(action==='restore'?'approved':action==='suspend'?'suspended':'approved')+'" data-id="'+profile.user_id+'">'+label+'</button>'+reject+'</div></article>';
   }
 
   function escapeHtml(value) {
@@ -170,10 +175,15 @@
   }
 
   async function changeStatus(id,status) {
-    const {error}=await supabase.from('profiles').update({status,updated_at:new Date().toISOString()}).eq('id',id);
+    const {error}=await supabase.rpc('admin_set_member_status',{target_user_id:id,new_status:status});
     if(error){alert(t('err'));return;}
     await loadAdminDashboard();
-    if(currentProfile?.id===id && status!=='approved'){await supabase.auth.signOut();showGate();renderAuth();}
+    if(currentProfile?.id===id && status!=='approved'){
+      await supabase.auth.signOut();
+      currentProfile=null;
+      showGate();
+      renderAuth();
+    }
   }
 
   async function init() {
