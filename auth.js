@@ -14,7 +14,8 @@
       login:'Sign in', signup:'Create account', email:'Email address', password:'Password', showPassword:'Show', hidePassword:'Hide',
       name:'Full name', submitLogin:'Sign in', submitSignup:'Create account', switchLogin:'Already registered? Sign in',
       switchSignup:'New to FitTogo? Create an account', config:'FitTogo access is not configured yet. The site owner must connect its Supabase project before users can register.',
-      confirm:'Check your email and confirm your address. Your account will then wait for administrator approval.',
+      confirm:'Your account request was received. Check your inbox and spam folder for the verification email. After confirming your email, your account will wait for administrator approval.',
+      existingAccount:'This email may already have an account. Switch to Sign in and use your existing password, or use password recovery. No new account was created.',
       pending:'Your email is confirmed and your account is awaiting approval. You will be able to use the assessment once an administrator approves you.',
       rejected:'Your access request was not approved. Please contact the FitTogo administrator.',
       suspended:'Your FitTogo access is currently suspended. Please contact the administrator.',
@@ -32,7 +33,8 @@
       login:'Connexion', signup:'Créer un compte', email:'Adresse e-mail', password:'Mot de passe', showPassword:'Afficher', hidePassword:'Masquer',
       name:'Nom complet', submitLogin:'Se connecter', submitSignup:'Créer mon compte', switchLogin:'Déjà inscrit ? Connectez-vous',
       switchSignup:'Nouveau sur FitTogo ? Créez un compte', config:'L’accès FitTogo n’est pas encore configuré. Le propriétaire du site doit connecter son projet Supabase avant toute inscription.',
-      confirm:'Consultez votre boîte e-mail et confirmez votre adresse. Votre compte sera ensuite en attente de validation par l’administrateur.',
+      confirm:'Votre demande de création de compte a été reçue. Vérifiez votre boîte de réception et vos courriers indésirables. Après confirmation de votre adresse, votre compte attendra la validation de l’administrateur.',
+      existingAccount:'Cette adresse e-mail possède peut-être déjà un compte. Passez à Connexion et utilisez votre mot de passe existant, ou récupérez votre mot de passe. Aucun nouveau compte n’a été créé.',
       pending:'Votre adresse e-mail est confirmée et votre compte attend l’approbation de l’administrateur. Vous pourrez utiliser le formulaire après validation.',
       rejected:'Votre demande d’accès n’a pas été approuvée. Veuillez contacter l’administrateur FitTogo.',
       suspended:'Votre accès à FitTogo est suspendu. Veuillez contacter l’administrateur.',
@@ -111,8 +113,15 @@
           options:{data:{full_name:name},emailRedirectTo:window.location.origin + window.location.pathname}
         });
         if(error) throw error;
-        if(data.session) await refreshAccess();
-        else message(t('confirm'),'success');
+        if(data.session) {
+          await refreshAccess();
+        } else if(data.user && Array.isArray(data.user.identities) && data.user.identities.length===0) {
+          authMode='login';
+          renderAuth();
+          message(t('existingAccount'),'info');
+        } else {
+          message(t('confirm'),'success');
+        }
       } else {
         const {error}=await supabase.auth.signInWithPassword({email,password});
         if(error) throw error;
