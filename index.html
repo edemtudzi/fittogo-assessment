@@ -13,7 +13,8 @@
     <a class="brand" href="#" aria-label="FitTogo home"><span class="brand-mark">F</span> FitTogo</a>
     <div class="header-tools"><span class="header-note">Fitness that fits your life</span><label class="language-control" for="language-select"><span class="language-label">Language</span><select id="language-select" aria-label="Choose language"><option value="en" selected>English</option><option value="fr">Français</option></select></label></div>
   </header>
-  <main class="container">
+  <section id="auth-gate" class="auth-gate"></section>
+  <main id="app-content" class="container hidden">
     <section class="hero">
       <p class="eyebrow">YOUR PERSONAL FITNESS BLUEPRINT</p>
       <h1>Build a stronger you.<br><span>Eat local. Train smart.</span></h1>
@@ -134,7 +135,10 @@
       <p class="privacy-note">Your answers are processed in this browser. This starter version does not send or store personal data on a server.</p>
     </section>
   </main>
-  <footer><span>FitTogo</span><span>Eat local. Train consistently. Progress patiently.</span></footer>
+  <footer id="app-footer" class="hidden"><span>FitTogo</span><span>Eat local. Train consistently. Progress patiently.</span></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
