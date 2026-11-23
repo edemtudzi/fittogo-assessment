@@ -129,3 +129,9 @@ footer span:first-child{font-weight:850;color:var(--ink)}
 .admin-action{border:0;border-radius:8px;padding:8px 11px;background:#eaf0d1;color:#34420f;font:inherit;font-size:12px;font-weight:750;cursor:pointer}
 .admin-action.danger{background:#fff0ef;color:#9b1c1c}
 @media(max-width:600px){.auth-gate{min-height:calc(100vh - 64px);padding:24px 14px}.auth-card{padding:22px 17px}.session-bar{margin:10px 14px}.member-row{align-items:flex-start;flex-direction:column}.member-actions{justify-content:flex-start}}
+
+.password-field{position:relative;display:flex;align-items:center;width:100%;min-width:0}
+.password-field input{padding-right:82px}
+.password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#52611c;font:inherit;font-size:12px;font-weight:800;padding:7px 8px;border-radius:6px;cursor:pointer}
+.password-toggle:hover{background:#f2f4e8}
+.password-toggle:focus-visible{outline:2px solid #75852c;outline-offset:2px}
