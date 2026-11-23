@@ -40,7 +40,23 @@ In the Agora project's **Authentication → URL Configuration**:
 
 **Important:** Changing these Auth settings affects the shared Agora Supabase Auth project, not only FitTogo. Check existing Agora redirect URLs before editing; add FitTogo's URL without deleting Agora's entries.
 
-### 4. Create the first FitTogo administrator
+### 4. Configure production email delivery (required before public launch)
+
+Keep email confirmation enabled. The Supabase built-in mailer is restricted and is not reliable enough for public registration.
+
+1. Choose an email provider that supports SMTP (for example, Resend, Brevo, or Amazon SES).
+2. Verify a domain or sending subdomain you control with that provider.
+3. Publish the provider's required SPF and DKIM DNS records; add DMARC as recommended by the provider.
+4. In Supabase, open **Authentication → Emails → SMTP Settings** and enable custom SMTP.
+5. Enter the SMTP host, port, username, password, and a verified sender address on your domain.
+6. Keep the existing Agora email/auth settings in mind: SMTP is shared by Agora and FitTogo because they use the same Supabase project. Changing it affects both applications.
+7. In **Authentication → URL Configuration**, preserve Agora's existing redirect URLs and add the FitTogo production URL. The signup confirmation redirect is generated from the current FitTogo page URL.
+
+Do not disable email confirmation to avoid configuring SMTP. That would allow signups using email addresses the registrant does not own.
+
+Before launch, test a brand-new email address that has never been used in this Supabase project: register, receive the email, follow the confirmation link back to FitTogo, sign in, remain pending, and then approve the account as admin. Also test password recovery. Because Auth is shared, test that existing Agora email flows still work.
+
+### 5. Create the first FitTogo administrator
 
 1. Register on FitTogo using the email address that should administer FitTogo.
 2. Confirm the email.
