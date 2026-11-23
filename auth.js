@@ -4,7 +4,6 @@
   const app = $('app-content');
   const footer = $('app-footer');
   const language = $('language-select');
-  const statusBox = $('auth-message');
   let supabase = null;
   let currentProfile = null;
   let authMode = 'login';
@@ -50,6 +49,8 @@
   const t = (key) => (copy[language?.value || 'en'] || copy.en)[key] || copy.en[key] || key;
 
   function message(text, kind='info') {
+    const statusBox = $('auth-message');
+    if (!statusBox) return;
     statusBox.textContent = text || '';
     statusBox.dataset.kind = kind;
     statusBox.hidden = !text;
