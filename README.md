@@ -1,72 +1,79 @@
 # FitTogo — African Fitness Assessment Website
 
-Bilingual English/French static fitness assessment, hosted on Vercel. Account registration and approval are handled by a dedicated Supabase project.
+Bilingual English/French fitness assessment hosted on Vercel. Registration and approval use Supabase Auth and a dedicated PostgreSQL schema inside the existing Agora Supabase project.
 
 ## Access-control architecture
 
-- Public email/password registration through Supabase Auth.
-- Email confirmation should remain enabled.
-- A database trigger creates each new account's `public.profiles` row with `status='pending'` and `role='user'`.
-- The assessment remains hidden unless the signed-in user has an approved profile.
-- Admin approval/rejection/suspension actions are enforced by PostgreSQL Row Level Security (RLS), not by browser-only checks.
-- Only a manually promoted admin can list and update member profiles.
+- Public email/password registration through the Agora project's shared Supabase Auth service.
+- Each new auth user receives a separate row in `fittogo.members` with `status='pending'`.
+- FitTogo's data is isolated in the `fittogo` schema. Existing Agora tables and its existing `public.handle_new_user()` trigger are not replaced.
+- The assessment is shown only after the signed-in user has an approved FitTogo membership.
+- Admin identities are stored separately in `fittogo.admins`; users cannot grant themselves admin rights.
+- Admin member listing and status changes use protected PostgreSQL RPC functions.
+- RLS protects member records. A normal user can read only their own membership status.
 - The browser uses only the Supabase publishable key (or legacy anon key). Never expose a service-role/secret key.
 
-## Required one-time setup
+**Shared-project note:** Supabase Auth is shared by applications using the same Supabase project. FitTogo accounts therefore exist in the Agora project's Auth user directory as well. FitTogo membership records and access rules remain isolated in the `fittogo` schema.
 
-### 1. Create a dedicated Supabase project
+## Required setup
 
-Create a new project at https://supabase.com/dashboard. Do not connect FitTogo to another product's database.
+### 1. Expose the FitTogo schema to the Data API
 
-### 2. Create the access-control database
+In the Agora Supabase dashboard, open **Project Settings → API → Exposed schemas** and add `fittogo`. Save the setting. Do not remove `public` or any existing exposed schemas.
 
-In the new project's **SQL Editor**, run the complete contents of `supabase/schema.sql`.
+The schema grants access only to the authenticated role. Anonymous users do not receive schema usage or table privileges.
 
-### 3. Configure the website's public Supabase client
+### 2. Configure the website's public Supabase client
 
 Open `supabase-config.js` and replace:
-- `https://YOUR-PROJECT-REF.supabase.co` with the project's Project URL.
-- `YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY` with its publishable key (or legacy anon key).
+- `https://YOUR-PROJECT-REF.supabase.co` with the Agora project's Project URL.
+- `YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY` with the Agora project's publishable key (or legacy anon key).
 
-These values are intentionally public. Do not paste a service-role or secret key.
+These values are intentionally public. Do not use a service-role or secret key.
 
-### 4. Configure Supabase Auth
+### 3. Configure Supabase Auth redirects
 
-In **Authentication → URL Configuration**:
-- Set Site URL to `https://fittogo-assessment.vercel.app` (replace with the actual production URL if different).
-- Add that exact URL to the Redirect URLs allowlist.
+In the Agora project's **Authentication → URL Configuration**:
+- Set the Site URL to the actual FitTogo production URL.
+- Add the exact production URL to the Redirect URLs allowlist.
 - Keep email confirmation enabled.
 
-For production email delivery beyond Supabase's default testing limits, configure a custom SMTP provider in **Authentication → SMTP Settings**.
+**Important:** Changing these Auth settings affects the shared Agora Supabase Auth project, not only FitTogo. Check existing Agora redirect URLs before editing; add FitTogo's URL without deleting Agora's entries.
 
-### 5. Create the first administrator
+### 4. Create the first FitTogo administrator
 
-1. Open the deployed FitTogo site and register using your own admin email.
-2. Confirm that email using the message Supabase sends.
-3. In Supabase SQL Editor, run the following, replacing the address with the exact admin email:
+1. Register on FitTogo using the email address that should administer FitTogo.
+2. Confirm the email.
+3. In the Agora project's SQL Editor, run this one-time statement, replacing the address with the exact administrator email:
 
 ```sql
-update public.profiles
-set role = 'admin', status = 'approved', updated_at = now()
-where lower(email) = lower('YOUR-ADMIN-EMAIL');
+insert into fittogo.admins (user_id)
+select id
+from auth.users
+where lower(email) = lower('YOUR-ADMIN-EMAIL')
+on conflict (user_id) do nothing;
 ```
 
-4. Sign out and sign back in. The admin approval dashboard will appear above the assessment.
+4. Sign out and sign back in. The FitTogo admin approval dashboard will appear above the assessment.
 
-Do not promote an account by editing browser code or metadata.
+Do not promote an account through browser code, user metadata, or a public table update.
 
-## Deployment
+## Deploy and test
 
-The repository is connected to Vercel; commits to the production branch should trigger a deployment. After configuring Supabase, test:
+The repository is connected to Vercel; commits to the production branch should trigger a deployment. After the Supabase configuration is complete, test:
+
 1. A new user can register and confirm their email.
-2. A pending user cannot see the assessment.
-3. The admin can approve the user.
+2. A pending user sees the waiting-for-approval message and cannot open the assessment through the normal site flow.
+3. The administrator can see pending requests and approve a user.
 4. The approved user can sign in and use the assessment.
-5. Suspending the user removes access.
-6. A normal user cannot query other profiles or change their own status/role.
+5. Suspending or rejecting a user removes access on their next access check.
+6. A normal user cannot list other members, change their own status, or read the admin table.
+7. Agora registration and existing Agora features still work.
 
-## Current product limits
+## Security and product limits
 
-- Assessment answers are still processed in the user's browser and are not saved as workout histories.
+- The assessment calculation itself is client-side JavaScript. This access gate controls normal website use; it cannot prevent a technically determined visitor from downloading the public JavaScript and recreating its calculations outside the site. Sensitive server-side features would require a backend authorization check.
+- Supabase Auth is shared with Agora because both apps use the same Supabase project. Use a separate project if fully separate login directories are required.
+- Assessment answers are processed in the user's browser and are not saved as workout histories.
 - Meal suggestions are broad African examples, not fully localized to every country.
 - Calorie and macro figures are estimates, not medical advice.
